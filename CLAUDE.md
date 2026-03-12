@@ -27,7 +27,8 @@ ContractGuardAgent1/
     └── skills/             # 技能模块
         ├── contract-reviewer/           # 合同审查主技能
         ├── clause-extractor/            # 条款提取技能
-        └── document-parser/             # 文档解析技能
+        ├── document-parser/             # 文档解析技能
+        └── risk-rules-query/            # 风险规则查询技能
 ```
 
 ## 可用技能
@@ -37,6 +38,7 @@ ContractGuardAgent1/
 | 合同审查 | 合同审查、审查合同、分析合同 | 完整审查流程：解析+提取+审查+风险提示 |
 | 条款提取 | 提取关键信息、提取金额、提取日期 | 从合同中提取当事人、日期、金额等 |
 | 文档解析 | 解析文档、提取文本 | 解析 doc/docx/pdf 文件 |
+| 风险规则查询 | 风险规则、查看风险、风险列表 | 从知识库查询行业风险规则 |
 
 ## 完整审查流程
 
