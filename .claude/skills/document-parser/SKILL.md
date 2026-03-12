@@ -34,29 +34,19 @@ Claude Code 会自动调用 document-parser 技能解析该文件。
 ### 2. 命令行调用
 
 ```bash
-python -m document_parser.parser <文件路径>
+python .claude/skills/document-parser/src/parser.py <文件路径>
 ```
 
 ## 输出格式
 
-解析结果为 JSON 格式，包含以下字段：
-
-```json
-{
-  "success": true,
-  "format": "pdf",
-  "file_name": "document.pdf",
-  "file_path": "/path/to/document.pdf",
-  "content": "文档全文内容...",
-  "page_count": 10,
-  "pages": [
-    {
-      "page_number": 1,
-      "content": "第1页内容..."
-    }
-  ]
-}
-```
+解析结果包含以下字段：
+- **success**: 是否解析成功
+- **format**: 文件格式（pdf/docx/doc）
+- **file_name**: 文件名
+- **file_path**: 文件路径
+- **content**: 文档全文内容
+- **page_count**: 页数
+- **pages**: 分页内容列表
 
 ## 错误处理
 

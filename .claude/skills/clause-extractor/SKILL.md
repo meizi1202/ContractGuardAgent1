@@ -90,7 +90,7 @@ result = extractor.extract_by_instruction(content, "提取所有金额信息")
 ### 3. 命令行调用
 
 ```bash
-python -m clause_extractor.extractor <提取指令>
+python .claude/skills/clause-extractor/src/extractor.py <提取指令>
 ```
 
 ## 提取指令示例
@@ -106,25 +106,12 @@ python -m clause_extractor.extractor <提取指令>
 
 ## 输出格式
 
-提取结果为 JSON 格式：
-
-```json
-{
-  "success": true,
-  "parties": {
-    "party_keywords": ["甲方", "乙方"],
-    "party_names": ["北京科技有限公司", "上海贸易有限公司"]
-  },
-  "dates": ["2024年1月15日"],
-  "amounts": ["人民币100万元"],
-  "deadlines": ["2024年1月15日起至2025年1月14日止"],
-  "contacts": {
-    "phones": ["010-12345678"],
-    "emails": ["zhang@example.com"],
-    "addresses": []
-  }
-}
-```
+提取结果包含以下结构化信息：
+- **parties**: 合同当事人信息
+- **dates**: 日期信息列表
+- **amounts**: 金额信息列表
+- **deadlines**: 期限信息列表
+- **contacts**: 联系方式（电话、邮箱、地址）
 
 ## 代码位置
 

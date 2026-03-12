@@ -4,13 +4,30 @@
 """
 
 import re
+import os
 from typing import Dict, Any, List, Optional
+
+# 导入行业风险库
+import sys
+import os
+
+# 添加 src 目录到路径
+srcPath = os.path.dirname(__file__)
+if srcPath not in sys.path:
+    sys.path.insert(0, srcPath)
+
+HAS_INDUSTRY_RISKS = False
+try:
+    from industryRiskLoader import industryRiskLoader, getRiskLoader
+    HAS_INDUSTRY_RISKS = True
+except ImportError as e:
+    print(f"Warning: Industry risk library not available: {e}")
 
 
 class contractReviewer:
     """合同审查器，提供完整的合同审查流程"""
 
-    # 合规性检查项
+    # 合规性检查项（从风险库动态生成）
     complianceChecks = {
         "party": {
             "name": "合同主体",
@@ -49,8 +66,8 @@ class contractReviewer:
         }
     }
 
-    # 风险模式
-    riskPatterns = [
+    # 基础风险模式（仅在无法加载Excel时使用后备）
+    _backupRiskPatterns = [
         {
             "level": "critical",
             "type": "金额风险",
@@ -95,7 +112,13 @@ class contractReviewer:
     ]
 
     def __init__(self):
-        pass
+        # 初始化行业风险加载器
+        self.riskLoader = None
+        if HAS_INDUSTRY_RISKS:
+            try:
+                self.riskLoader = getRiskLoader()
+            except Exception:
+                pass
 
     def review(self, content: str) -> Dict[str, Any]:
         """执行完整的合同审查
@@ -252,7 +275,42 @@ class contractReviewer:
         """
         risks = []
 
-        for riskType in self.riskPatterns:
+        # 优先使用行业风险库
+        if self.riskLoader:
+            try:
+                industryRisks = self.riskLoader.assessRisks(content)
+
+                # 自动识别行业
+                detectedIndustries = self.riskLoader.detectIndustry(content)
+
+                # 转换格式以匹配现有结构
+                for risk in industryRisks:
+                    risks.append({
+                        "level": risk.get("level", "warning"),
+                        "type": risk.get("category", "其他风险"),
+                        "name": risk.get("name", ""),
+                        "matched": risk.get("matched", ""),
+                        "suggestion": risk.get("suggestion", ""),
+                        "legalReference": risk.get("legalReference"),
+                        "industry": risk.get("industry", "general")
+                    })
+
+                # 如果识别到特定行业，在结果中添加行业信息
+                if detectedIndustries and detectedIndustries[0]['score'] > 0:
+                    risks.append({
+                        "level": "info",
+                        "type": "行业识别",
+                        "name": "合同所属行业",
+                        "matched": detectedIndustries[0]['name'],
+                        "suggestion": f"识别到 {len(detectedIndustries)} 个可能行业: {', '.join([i['name'] for i in detectedIndustries[:3]])}"
+                    })
+
+                return risks
+            except Exception as e:
+                print(f"行业风险库加载失败，使用基础规则: {e}")
+
+        # 后备：使用原有的基础规则（仅在无法加载行业风险库时使用）
+        for riskType in self._backupRiskPatterns:
             for pattern in riskType["patterns"]:
                 matches = re.findall(pattern, content, re.IGNORECASE)
                 if matches:

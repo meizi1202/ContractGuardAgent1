@@ -23,17 +23,16 @@ triggers:
 
 当用户请求合同审查时，按以下步骤执行：
 
+> **⚡ 自动执行**：以下步骤自动连贯执行，无需用户逐个确认
+
 ### Step 0: 检查上下文（复用已有结果）
 在执行解析和提取前，先检查当前对话上下文中是否已存在处理结果：
 - **已解析**：如果上下文中已有 documentParser 的解析结果（含 `content` 字段），直接提取使用，跳过 Step 1
 - **已提取**：如果上下文中已有 clauseExtractor 的提取结果，直接使用，跳过 Step 1 和 Step 2
 - **未处理**：按正常流程执行后续步骤
 
-### Step 1: 文档解析
-调用 `/document-parser` 技能解析合同文件
-
-### Step 2: 条款提取
-调用 `/clause-extractor` 技能提取关键信息
+### Step 1: 文档解析 → Step 2: 条款提取
+自动调用 `/document-parser` 和 `/clause-extractor` 解析并提取合同内容
 
 ### Step 3: 合规性审查
 检查合同要素：
@@ -64,36 +63,13 @@ triggers:
 
 ## 输出报告
 
-审查完成后，生成结构化报告：
+审查完成后，输出结构化的审查报告，包含以下内容：
 
-```json
-{
-  "success": true,
-  "summary": {
-    "totalIssues": 5,
-    "critical": 1,
-    "warning": 2,
-    "info": 2
-  },
-  "extractedInfo": {
-    "parties": ["甲方: xxx", "乙方: xxx"],
-    "amount": "人民币100万元",
-    "dates": {"signDate": "2024-01-15", "startDate": "2024-01-20"}
-  },
-  "compliance": {
-    "complete": true,
-    "missingClauses": []
-  },
-  "risks": [
-    {
-      "level": "critical",
-      "type": "金额风险",
-      "description": "合同金额未明确约定",
-      "suggestion": "建议补充明确金额条款"
-    }
-  ]
-}
-```
+- **合同基本信息**：合同名称、甲方乙方、金额、期限等
+- **合规性审查结果**：各检查项是否通过、缺失条款
+- **风险评估结果**：按风险等级分类列出
+- **审查总结**：问题数量统计
+- **核心建议**：针对高风险项的建议
 
 ## 代码位置
 
