@@ -3,13 +3,28 @@
 提供完整的合同审查功能：解析 + 提取 + 审查 + 风险评估
 """
 
-import re
-import os
-from typing import Dict, Any, List, Optional
-
-# 导入行业风险库
 import sys
 import os
+import re
+from typing import Dict, Any, List, Optional
+
+# 模块级别编码配置 - 解决 Windows 控制台中文乱码问题
+# 必须在任何其他代码之前执行
+if sys.platform == 'win32':
+    # 设置标准输出/错误编码为 UTF-8
+    if sys.stdout.encoding != 'utf-8':
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except Exception:
+            # 如果无法重新配置，则设置环境变量
+            os.environ['PYTHONIOENCODING'] = 'utf-8'
+    if sys.stderr.encoding != 'utf-8':
+        try:
+            sys.stderr.reconfigure(encoding='utf-8')
+        except Exception:
+            pass
+
+# 导入行业风险库
 
 # 添加 src 目录到路径
 srcPath = os.path.dirname(__file__)

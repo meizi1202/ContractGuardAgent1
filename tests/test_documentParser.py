@@ -3,6 +3,22 @@
 import sys
 import os
 
+# 模块级别编码配置 - 解决 Windows 控制台中文乱码问题
+# 必须在任何其他代码之前执行
+if sys.platform == 'win32':
+    # 设置标准输出/错误编码为 UTF-8
+    if sys.stdout.encoding != 'utf-8':
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except Exception:
+            # 如果无法重新配置，则设置环境变量
+            os.environ['PYTHONIOENCODING'] = 'utf-8'
+    if sys.stderr.encoding != 'utf-8':
+        try:
+            sys.stderr.reconfigure(encoding='utf-8')
+        except Exception:
+            pass
+
 # 添加 src 目录到路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '.claude', 'skills', 'document-parser', 'src'))
 
