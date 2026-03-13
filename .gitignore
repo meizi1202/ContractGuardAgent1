@@ -44,3 +44,6 @@ htmlcov/
 
 # Claude Code
 .claude/cache/
+
+# Contracts (local sensitive files)
+contracts/*
